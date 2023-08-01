@@ -1,4 +1,6 @@
-# This is the frontend repo for the tracking-plan project/ assignment. 
+# Frontend Tracking Plan Dashboard
+
+This is the frontend repo for the tracking-plan project/ assignment. 
 
 ## Starting the project
 
