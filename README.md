@@ -6,7 +6,8 @@ This is the frontend repo for the tracking-plan project/ assignment.
 
 Once cloned, in the project directory, you can run:
 
-### `npm start`
+#### `npm install`
+#### `npm run start`
 
 This runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view the tracking plan dashboard in your browser.
