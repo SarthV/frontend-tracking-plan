@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import Input from "./components/input";
 import Separator from "./components/separator/separator";
 import Button from "./components/button/button";
@@ -6,34 +7,39 @@ import axios from "axios";
 import Snackbar from "./components/snackbar/snackbar";
 
 const SimpleForm = () => {
-    const initialFormData = {
-        name: "",
-        description: "",
-        source: "",
-    };
+  const initialFormData = {
+    name: "",
+    description: "",
+    source: "",
+  };
   const [formData, setFormData] = useState(initialFormData);
   const [events, setEvents] = useState([]);
   const [visible, setVisible] = useState(false);
   const [snackbarLabel, setSnackbarLabel] = useState('');
   const [snackbarColor, setSnackbarColor] = useState('red');
+  const navigate = useNavigate();
+
 
 
   const handleAddEvent = (event) => {
     event.preventDefault();
 
     setEvents(
-        [...events, {name: '', description: '', rules: {}}]
+      [...events, { name: '', description: '', rules: {} }]
     );
   }
 
   const handleEventChange = (event, index, eventField) => {
     const { name, value } = event.target;
-    events[index][eventField] = value;  
+    events[index][eventField] = value;
+  }
+
+  const handleShowPlans = () => {
+    navigate('/list');
   }
 
 
   const handleChange = (event) => {
-    // console.log('event', name, value);
     const { name, value } = event.target;
 
     setFormData((prevFormData) => ({
@@ -44,43 +50,41 @@ const SimpleForm = () => {
 
   const checkValidation = () => {
     for (const [key, value] of Object.entries(formData)) {
-        if(!value || value === ""){
-            setSnackbarColor('red');
-            setSnackbarLabel(`Missing Fields`);
-            return false;
-        }
+      if (!value || value === "") {
+        setSnackbarColor('red');
+        setSnackbarLabel(`Missing Fields`);
+        return false;
+      }
     };
     return true;
   }
 
   const handleSubmit = (event) => {
     if (!checkValidation()) {
-        setVisible(true);
-        return;
+      setVisible(true);
+      return;
     }
 
     event.preventDefault();
     const parsedData = events.map((event) => {
-        let parsedRules ={};
-        try {
-            console.log(event.rules, typeof event.rules);
-          parsedRules = JSON.parse(event.rules);
-        } catch (error) {
-            setSnackbarLabel('Wrong Input');
+      let parsedRules = {};
+      try {
+        console.log(event.rules, typeof event.rules);
+        parsedRules = JSON.parse(event.rules);
+      } catch (error) {
+        setSnackbarLabel('Wrong Input');
         setVisible(true);
-        }
-      
-        return {
-          ...event,
-          rules: parsedRules,
-        };
-      });
-      
-    console.log(events, 'events', parsedData);
+      }
+
+      return {
+        ...event,
+        rules: parsedRules,
+      };
+    });
 
     const postData = {
-        ...formData,
-        events: parsedData,
+      ...formData,
+      events: parsedData,
     };
     axios
       .post("http://localhost:8080/tracking-plan", postData)
@@ -99,92 +103,95 @@ const SimpleForm = () => {
         setVisible(true);
         setFormData(initialFormData);
         setEvents([]);
-    
+
       });
   };
 
   return (
-      <><form
-          onSubmit={handleSubmit}
-          className="form">
-          <Separator height="10px" color="transparent" />
+    <><form
+      onSubmit={handleSubmit}
+      className="form">
+      <Separator height="10px" color="transparent" />
 
-          <div className="form-container">
+      <div className="form-container">
 
-              <div className="form-label">
-                  <label htmlFor="name">Name:</label>
-                  <Input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange} />
-              </div>
-              <div className="form-label">
-                  <label htmlFor="description">Description:</label>
-                  <Input
-                      type="text"
-                      id="description"
-                      name="description"
-                      value={formData.description}
-                      onChange={handleChange}
-                      height="110px" />
-              </div>
-              <div className="form-label">
-                  <label htmlFor="source">Source:</label>
-                  <Input
-                      type="text"
-                      id="source"
-                      name="source"
-                      value={formData.source}
-                      onChange={handleChange} />
-              </div>
-              <h2>Add Events</h2>
-              {events.map((eventObj, index) => {
-                  return (
-                      <><div className="form-label">
-                          <label htmlFor="event">Name:</label>
-                          <Input
-                              type="text"
-                              id="eventName"
-                              name="eventName"
-                              onChange={(e) => handleEventChange(e, index, 'name')} />
-                      </div><div className="form-label">
-                              <label htmlFor="event">Description:</label>
-                              <Input
-                                  type="text"
-                                  id="eventDescription"
-                                  name="eventDescription"
-                                  onChange={(e) => handleEventChange(e, index, 'description')} />
-                          </div><div className="form-label">
-                              <label htmlFor="event">Rules:</label>
-                              <Input
-                                  type="text"
-                                  id="eventRules"
-                                  name="eventRules"
-                                  onChange={(e) => handleEventChange(e, index, 'rules')} />
-
-                          </div>
-                          <Separator color='black' height='1px' />
-                      </>
-                  );
-
-              })}
-              <div className="button-container">
-              <Button onClick={(e) => handleAddEvent(e)} label="+ Add event" />
+        <div className="form-label">
+          <label htmlFor="name">Name:</label>
+          <Input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange} />
+        </div>
+        <div className="form-label">
+          <label htmlFor="description">Description:</label>
+          <Input
+            type="text"
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            height="110px" />
+        </div>
+        <div className="form-label">
+          <label htmlFor="source">Source:</label>
+          <Input
+            type="text"
+            id="source"
+            name="source"
+            value={formData.source}
+            onChange={handleChange} />
+        </div>
+        <h2>Add Events</h2>
+        {events.map((eventObj, index) => {
+          return (
+            <><div className="form-label">
+              <label htmlFor="event">Name:</label>
+              <Input
+                type="text"
+                id="eventName"
+                name="eventName"
+                onChange={(e) => handleEventChange(e, index, 'name')} />
+            </div><div className="form-label">
+                <label htmlFor="event">Description:</label>
+                <Input
+                  type="text"
+                  id="eventDescription"
+                  name="eventDescription"
+                  onChange={(e) => handleEventChange(e, index, 'description')} />
+              </div><div className="form-label">
+                <label htmlFor="event">Rules:</label>
+                <Input
+                  type="text"
+                  id="eventRules"
+                  name="eventRules"
+                  onChange={(e) => handleEventChange(e, index, 'rules')} />
 
               </div>
-              <Separator height="10px" color="transparent" />
+              <Separator color='black' height='1px' />
+            </>
+          );
 
-          </div>
-          <Button type="submit" label="Submit" />
+        })}
+        <div className="button-container">
+          <Button onClick={(e) => handleAddEvent(e)} label="+ Add event" />
 
-      </form><Snackbar backgroundColor={snackbarColor} label={snackbarLabel} 
-      visible={visible} 
+        </div>
+        <Separator height="10px" color="transparent" />
+
+      </div>
+      <Button type="submit" label="Submit" />
+      <Separator height='10px' color='transparent' />
+      <Button onClick={handleShowPlans} label="See Plans" />
+
+
+    </form><Snackbar backgroundColor={snackbarColor} label={snackbarLabel}
+      visible={visible}
       setVisible={setVisible} /></>
-        
-    
-    
+
+
+
   );
 };
 
